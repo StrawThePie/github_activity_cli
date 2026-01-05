@@ -1,59 +1,53 @@
 GitHub User Activity CLI
-A polished Python command-line tool that fetches and displays a GitHub user’s recent public activity (commits, issues, pull requests, and more) directly in the terminal. This project was built as a learning-focused implementation of the GitHub User Activity challenge from roadmap.sh, with extra features like rich formatting, pagination, and robust error handling.
+A simple command‑line tool written in Python that shows a GitHub user’s recent public activity (commits, issues, pull requests, and more) in your terminal.
+The tool talks to the GitHub REST API, formats the response, and prints it in a readable table, making it a practical example of working with APIs and CLIs.
 
-Highlights
-Tech stack: Python, requests, rich, python-dotenv, argparse.
+Features
+Fetch recent public events for any GitHub username (including your own).
 
-Fetches recent public events for any GitHub user and renders them in a clean, colorized table in the terminal.
+Nicely formatted terminal output using the rich library (table with event type, repository, and timestamp).
 
-Built to practice real-world skills: working with REST APIs, handling JSON, building CLIs, and managing configuration securely.
+Pagination support via a --page argument so you can browse older events.
 
-Shows experience with:
+Configuration via .env file so your GitHub Personal Access Token never appears in the code.
 
-Python and virtual environments.
+Basic error handling for:
 
-API authentication (GitHub Personal Access Tokens) and .env-based configuration.
+Missing or invalid token
 
-Modular code organization and git/GitHub version control.
+Invalid usernames
 
-What It Does
-Accepts a GitHub username (and optional page number) as CLI arguments.
+Network or HTTP errors (non‑200 responses).
 
-Authenticates with the GitHub API using a Personal Access Token stored in a .env file.
+Tech Stack
+Python
 
-Fetches the user’s public events from https://api.github.com/users/<username>/events.
+requests for HTTP calls to the GitHub API
 
-Displays events in a Rich table with:
+rich for pretty terminal output
 
-Event type (for example, PushEvent, IssuesEvent, PullRequestEvent)
+python-dotenv for loading environment variables from .env
 
-Repository name
-
-Timestamp.
-
-Supports pagination so you can explore older activity with --page.
-
-Handles invalid users, missing tokens, network issues, and non-200 responses with clear messages.
+argparse for command‑line arguments (username and page)
 
 Project Structure
 text
 github_activity_cli/
-├── cli.py          # CLI entrypoint (argparse, Rich table rendering)
-├── github_api.py   # GitHub API client (requests, auth, pagination, error handling)
-├── utils.py        # Helpers and future utility functions
-├── .env            # Local secrets (GITHUB_TOKEN), ignored by git
-├── .gitignore      # Ignores .env, .venv, __pycache__, etc.
-├── README.md       # Project documentation
-cli.py focuses on user experience: parsing arguments, formatting output, and keeping the interface intuitive.
-
-github_api.py handles API details: building URLs, sending requests, handling pagination, and returning usable data to the CLI.
-
+│
+├── cli.py            # Main entry point: parses args and prints tables
+├── github_api.py     # Functions for calling the GitHub API and handling pagination
+├── utils.py          # Helper functions (room for future utilities)
+├── .env              # Holds GITHUB_TOKEN (not committed)
+├── .gitignore        # Ignores .env, .venv, __pycache__, etc.
+└── README.md         # Project documentation
 Setup and Installation
-1. Clone the Repository
+Clone the repository
+
 bash
 git clone https://github.com/<your-username>/github_activity_cli.git
 cd github_activity_cli
-2. Create and Activate a Virtual Environment
+Create and activate a virtual environment
+
 bash
 python -m venv .venv
 
@@ -62,33 +56,36 @@ python -m venv .venv
 
 # macOS/Linux
 source .venv/bin/activate
-3. Install Dependencies
+Install dependencies
+
 bash
 pip install requests rich python-dotenv pytest
-4. Configure Your GitHub Token
-Generate a Personal Access Token in your GitHub account settings.
+Configure your GitHub token
 
-Grant minimal scopes such as read:user (and optionally repo if you later want private activity).
+Create a Personal Access Token in your GitHub account settings with at least the read:user scope (and optionally repo if you later want private activity).
 
-Create a .env file in the project root:
+In the project root, create a file named .env:
 
 text
 GITHUB_TOKEN=your_token_here
-.env should be listed in .gitignore so the token is not committed.
+Make sure .env is listed in .gitignore so it is not committed.
 
 Usage
-From an activated virtual environment:
+From an activated virtual environment in the project root:
 
-Basic: First Page of Events
+Show first page of your own activity
+
 bash
 python cli.py StrawThePie
-Paginated: Second Page of Events
+Show a specific page of activity
+
 bash
 python cli.py StrawThePie --page 2
-Different User
+Look up another user
+
 bash
 python cli.py octocat
-Example terminal output:
+Example output:
 
 text
 ┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓
@@ -99,45 +96,38 @@ text
 │ PullRequestEvent     │ StrawThePie/project-x         │ 2026-01-02T10:11:42Z │
 └──────────────────────┴───────────────────────────────┴──────────────────────┘
 Testing and Code Quality
-Designed with testing in mind using pytest.
+The project is structured so that API logic in github_api.py can be tested separately from the CLI in cli.py.
 
-Separation of cli.py and github_api.py allows testing API logic independently from the CLI layer.
+You can add tests with pytest to:
 
-Future tests can:
+Mock GitHub API responses
 
-Mock GitHub API responses.
+Check behavior for invalid usernames
 
-Validate behavior for invalid usernames, rate-limited responses, and timeouts.
+Check responses when the API rate limit or network errors occur
 
-Run tests (when added):
+Run tests (once added):
 
 bash
 pytest
-Learning Outcomes
-This project demonstrates:
+What You Learn from This Project
+How to call a real public API (GitHub REST API) from Python using requests.
 
-API integration: authenticated GET requests against the GitHub REST API, including headers, timeouts, and HTTP error handling.
+How to parse JSON responses and pull out useful fields.
 
-JSON parsing: working with nested event payloads and extracting meaningful fields.
+How to design a small but practical CLI using argparse and rich terminal output.
 
-CLI design: building a user-friendly interface with argparse and rich terminal output.
+How to manage secrets with .env and environment variables instead of hardcoding tokens.
 
-Configuration management: using .env and python-dotenv to keep secrets out of source control.
+How to structure a small project with separate modules and use git/GitHub from the beginning.
 
-Version control discipline: structuring a project with git and GitHub from the beginning.
+Possible Future Improvements
+Add flags to filter by event type (only pushes, only issues, only pull requests).
 
-Future Work
-Possible enhancements:
+Add an option to export results to JSON or CSV for later analysis.
 
-Filter by event type (for example, only pushes or only issues).
+Add interactive paging (for example, press n for next page).
 
-Add flags for compact versus detailed views.
+Switch to the GitHub GraphQL API for more flexible queries.
 
-Export activity to JSON or CSV for analysis.
-
-Integrate GitHub’s GraphQL API for richer queries and more efficient data fetching.
-
-Package the tool as a pip-installable CLI with an entry point script.
-
-About the Project
-This CLI is part of a broader effort to build practical, API-driven Python tools based on roadmap-style projects, with a focus on clean code, good developer experience, and real-world patterns.
+Package the tool so it can be installed with pip and run as a global command.
